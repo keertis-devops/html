@@ -1,0 +1,38 @@
+name: Launch EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  launch-ec2:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1  # Change to your preferred region
+
+    - name: Launch EC2 Instance
+      id: launch_ec2
+      run: |
+        INSTANCE_ID=$(aws ec2 run-instances \
+          --image-id ami-04b70fa74e45c3917 \ 
+          --instance-type t2.micro \         
+          --key-name shubham \             
+          --security-group-ids sg-0149ec6f0649ba6fe \ 
+          --subnet-id subnet-03151fd3b6eaba29d \ 
+          --query 'Instances[0].InstanceId' \
+          --output text)
+        
+        echo "EC2_INSTANCE_ID=$INSTANCE_ID" >> $GITHUB_ENV
+
+    - name: Output EC2 Instance ID
+      run: echo "EC2 Instance ID: ${{ env.EC2_INSTANCE_ID }}"
