@@ -34,5 +34,4 @@ jobs:
         
         echo "EC2_INSTANCE_ID=$INSTANCE_ID" >> $GITHUB_ENV
 
-    - name: Output EC2 Instance ID
-      run: echo "EC2 Instance ID: ${{ env.EC2_INSTANCE_ID }}"
+   
