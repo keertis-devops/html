@@ -1,31 +1,23 @@
-name: Deploy to GitHub Pages
+name: html CI
 
 on:
   push:
-    branches:
-      - main  # Change this to your main branch name if different
+    branches: [ main ]
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-      
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
+
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v1
         with:
-          node-version: '14'
-      
-      - name: Install dependencies
-        run: npm install  # Adjust if you use npm or yarn to install dependencies
-      
-      - name: Build HTML site
-        run: npm run build  # Adjust this if you have a specific build command
-      
-      - name: Deploy to GitHub Pages
-        uses: JamesIves/github-pages-deploy-action@3.7.1
-        with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH: gh-pages  # Branch to deploy to
-          FOLDER: ./build  # Directory with your built HTML files
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRETE_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: site on s3 bucket
+        run: aws s3 sync . s3://madan001011 --delete
